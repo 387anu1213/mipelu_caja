@@ -126,26 +126,6 @@ if menu == "CAJA":
 
     st.session_state.peluquera_activa = seleccion
 
-    # --- Mostrar los bloques de color ---
-    cols = st.columns(3)
-    for i, nombre in enumerate(peluqueras.keys()):
-        color = peluqueras[nombre]
-        activo = nombre == seleccion
-
-        estilo = f"""
-            background-color: {color};
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 22px;
-            border: {'4px solid white' if activo else '2px solid #ddd'};
-            box-shadow: {'0px 0px 12px rgba(0,0,0,0.3)' if activo else 'none'};
-        """
-
-        with cols[i]:
-            st.markdown(f"<div style='{estilo}'>{nombre}</div>", unsafe_allow_html=True)
-
     # --- Círculo arriba a la derecha con la peluquera activa ---
     color = peluqueras[seleccion]
     st.markdown(
