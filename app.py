@@ -107,6 +107,8 @@ menu = st.sidebar.radio("Menú", ["CAJA", "HISTORIAL", "ESTADÍSTICAS"])
 
 if menu == "CAJA":
 
+    st.title("CAJA")
+
     # --- Lista de peluqueras con colores ---
     peluqueras = {
         "Vane": "#98ffcc",   # rosa pastel 
@@ -157,8 +159,8 @@ if menu == "CAJA":
                 """,
                 unsafe_allow_html=True
             )
-        
-    st.title("CAJA")
+
+#----------------------------------------------------------------------------------------------------------------------
 
 # --- Cargar historial para obtener clientes existentes ---
     df_hist = load_csv_from_github()
@@ -240,15 +242,21 @@ if menu == "CAJA":
     # st.session_state.peluquera_activa = peluquera
     
 
-    if st.button("💰 COBRAR", use_container_width=True):
-        if cliente == "":
-            st.error("Pon el nombre de la cliente")
-        else:
-            servicio_str = "+".join(st.session_state.servicios)
-            append_to_github_csv(cliente, servicio_str, st.session_state.total, pago, peluquera, propina)
+if st.button("💰 COBRAR", use_container_width=True):
+    if cliente == "":
+        st.error("Pon el nombre de la cliente")
+    else:
+        servicio_str = "+".join(st.session_state.servicios)
+        append_to_github_csv(cliente, servicio_str, st.session_state.total, pago, peluquera, propina)
 
-            st.session_state.servicios = []
-            st.session_state.total = 0
+        st.session_state.servicios = []
+        st.session_state.total = 0
+
+        st.success("Cobro registrado correctamente")
+
+        # Meme del hermano de Lamine Yamal en el mundial
+        meme_lamine = "https://i.imgflip.com/92jz8x.jpg"
+        st.image(meme_lamine, width=250)
 
 
 # ============================================================
