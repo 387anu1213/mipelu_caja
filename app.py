@@ -114,73 +114,64 @@ if menu == "CAJA":
         "Merce": "#98ffcc"   # verde menta
     }
 
-    # --- Inicializar estado ---
-    if "peluquera_activa" not in st.session_state:
-        st.session_state.peluquera_activa = None
+    # --- Selector visual de peluquera ---
+    st.markdown("### 💇‍♀️ Selecciona la peluquera")
 
-    # --- Mostrar los 3 bloques en línea ---
+    seleccion = st.radio(
+        "",
+        list(peluqueras.keys()),
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+
+    st.session_state.peluquera_activa = seleccion
+
+    # --- Mostrar los bloques de color ---
     cols = st.columns(3)
-
     for i, nombre in enumerate(peluqueras.keys()):
+        color = peluqueras[nombre]
+        activo = nombre == seleccion
+
+        estilo = f"""
+            background-color: {color};
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 22px;
+            border: {'4px solid white' if activo else '2px solid #ddd'};
+            box-shadow: {'0px 0px 12px rgba(0,0,0,0.3)' if activo else 'none'};
+        """
+
         with cols[i]:
-            color = peluqueras[nombre]
-            activo = st.session_state.peluquera_activa == nombre
-
-            estilo = f"""
-                background-color: {color};
-                padding: 25px;
-                border-radius: 15px;
-                text-align: center;
-                font-weight: bold;
-                font-size: 22px;
-                border: {'4px solid white' if activo else '2px solid #ddd'};
-                box-shadow: {'0px 0px 12px rgba(0,0,0,0.3)' if activo else 'none'};
-                cursor: pointer;
-            """
-
-            # Bloque clicable sin botón duplicado
-            clicked = st.markdown(
-                f"""
-                <div onclick="window.parent.postMessage({{'type': 'streamlit:setComponentValue', 'value': '{nombre}'}}, '*')"
-                     style="{estilo}">
-                    {nombre}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-    # --- Capturar clic del bloque ---
-    clicked = st.experimental_get_query_params().get("value", [None])[0]
-    if clicked in peluqueras:
-        st.session_state.peluquera_activa = clicked
+            st.markdown(f"<div style='{estilo}'>{nombre}</div>", unsafe_allow_html=True)
 
     # --- Círculo arriba a la derecha con la peluquera activa ---
-    if st.session_state.peluquera_activa:
-        color = peluqueras[st.session_state.peluquera_activa]
-        st.markdown(
-            f"""
-            <div style="
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background-color: {color};
-                color: black;
-                width: 70px;
-                height: 70px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-weight: bold;
-                font-size: 18px;
-                border: 3px solid white;
-                box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-            ">
-                {st.session_state.peluquera_activa}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    color = peluqueras[seleccion]
+    st.markdown(
+        f"""
+        <div style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: {color};
+            color: black;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            border: 3px solid white;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+        ">
+            {seleccion}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     
     st.title("CAJA")
 
