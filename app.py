@@ -109,7 +109,27 @@ if menu == "CAJA":
 
     st.title("CAJA")
 
-    cliente = st.text_input("Cliente")
+    # --- Cargar historial para obtener clientes existentes ---
+    df_hist = load_csv_from_github()
+    if not df_hist.empty:
+        clientes_existentes = sorted(df_hist["cliente"].unique().tolist())
+    else:
+        clientes_existentes = []
+
+    # --- Selector de cliente existente ---
+    cliente_seleccionado = st.selectbox(
+        "Seleccionar cliente existente",
+        ["Ninguno"] + clientes_existentes
+    )
+
+    # --- Campo manual ---
+    cliente_manual = st.text_input("O escribir cliente manualmente")
+
+    # --- Lógica: si selecciona uno existente, lo usamos ---
+    if cliente_seleccionado != "Ninguno":
+        cliente = cliente_seleccionado
+    else:
+        cliente = cliente_manual
 
     if "servicios" not in st.session_state:
         st.session_state.servicios = []
@@ -180,8 +200,22 @@ elif menu == "HISTORIAL":
     if df.empty:
         st.info("El historial aún está vacío o no se pudo cargar.")
     else:
-        st.dataframe(df)
 
+        # --- FILTRO POR CLIENTE ---
+        clientes_unicos = df["cliente"].unique().tolist()
+        cliente_filtro = st.selectbox("Filtrar por cliente", ["Todos"] + clientes_unicos)
+
+        if cliente_filtro != "Todos":
+            df = df[df["cliente"] == cliente_filtro]
+
+        # --- FILTRO POR PELUQUERA ---
+        peluqueras_unicas = df["peluquera"].unique().tolist()
+        peluquera_filtro = st.selectbox("Filtrar por peluquera", ["Todas"] + peluqueras_unicas)
+
+        if peluquera_filtro != "Todas":
+            df = df[df["peluquera"] == peluquera_filtro]
+
+        st.dataframe(df)
 
 # ============================================================
 # ===================== ESTADÍSTICAS ==========================
