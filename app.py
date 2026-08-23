@@ -47,7 +47,7 @@ def load_csv_from_github():
     return df
 
 # --- Interfaz Streamlit ---
-st.title("💇 Caja Peluquería")
+st.title("CAJA")
 
 cliente = st.text_input("Nombre de la cliente")
 
