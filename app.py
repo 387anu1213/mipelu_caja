@@ -107,6 +107,29 @@ menu = st.sidebar.radio("Menú", ["CAJA", "HISTORIAL", "ESTADÍSTICAS"])
 
 if menu == "CAJA":
 
+    # --- Mostrar peluquera en la esquina superior derecha ---
+    st.markdown("""
+        <div style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff69b4;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+        ">
+            """ + st.session_state.get("peluquera_activa", "??") + """
+        </div>
+    """, unsafe_allow_html=True)
+    
+
     st.title("CAJA")
 
 # --- Cargar historial para obtener clientes existentes ---
@@ -175,9 +198,19 @@ if menu == "CAJA":
 
     st.write("Servicios:", ", ".join(st.session_state.servicios))
 
-    pago = st.radio("Método de pago", ["Efectivo", "Tarjeta"])
-    peluquera = st.selectbox("Peluquera", ["Vane", "Merce", "No me acuerdo del nombre", "Otra"])
-    propina = st.number_input("Propina (€)", min_value=0, value=0)
+# --- Pago + Propina ---
+    col_pago, col_propina = st.columns(2)
+
+    with col_pago:
+        pago = st.radio("Método de pago", ["Efectivo", "Tarjeta"])
+
+    with col_propina:
+        propina = st.number_input("Propina (€)", min_value=0, value=0)
+    
+    peluquera = st.selectbox("Peluquera", ["Vane", "Merce", "Virgi", "Otra"])
+    # Guardar peluquera activa para mostrarla en el círculo
+    st.session_state.peluquera_activa = peluquera
+    
 
     if st.button("💰 COBRAR", use_container_width=True):
         if cliente == "":
