@@ -109,7 +109,7 @@ if menu == "CAJA":
 
     st.title("CAJA")
 
-    cliente = st.text_input("Nombre de la cliente")
+    cliente = st.text_input("Cliente")
 
     if "servicios" not in st.session_state:
         st.session_state.servicios = []
@@ -153,7 +153,7 @@ if menu == "CAJA":
     st.write("Servicios:", ", ".join(st.session_state.servicios))
 
     pago = st.radio("Método de pago", ["Efectivo", "Tarjeta"])
-    peluquera = st.selectbox("Peluquera", ["Ana", "María", "Lucía", "Otra"])
+    peluquera = st.selectbox("Peluquera", ["Vane", "Merce", "No me acuerdo del nombre", "Otra"])
     propina = st.number_input("Propina (€)", min_value=0, value=0)
 
     if st.button("💰 COBRAR", use_container_width=True):
