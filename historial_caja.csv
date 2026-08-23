@@ -3,3 +3,4 @@ fecha,cliente,servicio,total,pago,peluquera,propina
 2026-08-23 16:20:41,Pepa,tinte+extra:5+extra:5+extra:5,40,Efectivo,Lucía,0
 2026-08-23 17:14:51,ClientePrueba,corte+tinte+lavado+corte+corte+tinte+lavado+tinte,130,Tarjeta,Vane,0
 2026-08-23 17:14:57,ClientePrueba,,0,Tarjeta,Vane,0
+2026-08-23 17:16:56,ClientePrueba,lavado+tinte,30,Tarjeta,Vane,0
