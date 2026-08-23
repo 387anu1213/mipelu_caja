@@ -107,28 +107,75 @@ menu = st.sidebar.radio("Menú", ["CAJA", "HISTORIAL", "ESTADÍSTICAS"])
 
 if menu == "CAJA":
 
-    # --- Mostrar peluquera en la esquina superior derecha ---
-    st.markdown("""
-        <div style="
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ff69b4;
-            color: white;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-        ">
-            """ + st.session_state.get("peluquera_activa", "??") + """
-        </div>
-    """, unsafe_allow_html=True)
-    
+    # --- Lista de peluqueras ---
+    peluqueras = ["Vane", "Virgi", "Merce"]
+
+    # --- Inicializar estado ---
+    if "peluquera_activa" not in st.session_state:
+        st.session_state.peluquera_activa = None
+
+    # --- Estilos de círculos ---
+    circle_style = """
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        font-weight: bold;
+        font-size: 20px;
+        cursor: pointer;
+        margin: auto;
+        box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+    """
+
+    active_style = "background-color: #ff69b4; color: white;"
+    inactive_style = "background-color: #f0f0f0; color: #333;"
+
+    # --- Mostrar los 3 círculos en línea ---
+    cols = st.columns(3)
+
+    for i, nombre in enumerate(peluqueras):
+        with cols[i]:
+            estilo = active_style if st.session_state.peluquera_activa == nombre else inactive_style
+
+            if st.button(nombre):
+                st.session_state.peluquera_activa = nombre
+
+            st.markdown(
+                f"""
+                <div style="{circle_style} {estilo}">
+                    {nombre[0]}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    # --- Círculo arriba a la derecha con la peluquera activa ---
+    if st.session_state.peluquera_activa:
+        st.markdown(
+            f"""
+            <div style="
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: #ff69b4;
+                color: white;
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: bold;
+                font-size: 18px;
+                box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+            ">
+                {st.session_state.peluquera_activa}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )    
 
     st.title("CAJA")
 
@@ -207,9 +254,9 @@ if menu == "CAJA":
     with col_propina:
         propina = st.number_input("Propina (€)", min_value=0, value=0)
     
-    peluquera = st.selectbox("Peluquera", ["Vane", "Merce", "Virgi", "Otra"])
-    # Guardar peluquera activa para mostrarla en el círculo
-    st.session_state.peluquera_activa = peluquera
+    # peluquera = st.selectbox("Peluquera", ["Vane", "Merce", "Virgi", "Otra"])
+    # # Guardar peluquera activa para mostrarla en el círculo
+    # st.session_state.peluquera_activa = peluquera
     
 
     if st.button("💰 COBRAR", use_container_width=True):
