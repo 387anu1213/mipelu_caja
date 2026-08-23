@@ -247,7 +247,14 @@ if st.button("💰 COBRAR", use_container_width=True):
         st.error("Pon el nombre de la cliente")
     else:
         servicio_str = "+".join(st.session_state.servicios)
-        append_to_github_csv(cliente, servicio_str, st.session_state.total, pago, peluquera, propina)
+        append_to_github_csv(
+            cliente,
+            servicio_str,
+            st.session_state.total,
+            pago,
+            st.session_state.peluquera_activa,   # ← aquí estaba el error
+            propina
+        )
 
         st.session_state.servicios = []
         st.session_state.total = 0
