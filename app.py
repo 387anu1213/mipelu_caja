@@ -109,23 +109,26 @@ if menu == "CAJA":
 
     st.title("CAJA")
 
-    # --- Cargar historial para obtener clientes existentes ---
+# --- Cargar historial para obtener clientes existentes ---
     df_hist = load_csv_from_github()
     if not df_hist.empty:
         clientes_existentes = sorted(df_hist["cliente"].unique().tolist())
     else:
         clientes_existentes = []
 
-    # --- Selector de cliente existente ---
-    cliente_seleccionado = st.selectbox(
-        "Seleccionar cliente existente",
-        ["Ninguno"] + clientes_existentes
-    )
+    # --- Selector + campo manual en la misma línea ---
+    col_cliente1, col_cliente2 = st.columns(2)
 
-    # --- Campo manual ---
-    cliente_manual = st.text_input("O escribir cliente manualmente")
+    with col_cliente1:
+        cliente_seleccionado = st.selectbox(
+            "Cliente existente",
+            ["Ninguno"] + clientes_existentes
+        )
 
-    # --- Lógica: si selecciona uno existente, lo usamos ---
+    with col_cliente2:
+        cliente_manual = st.text_input("Cliente manual")
+
+    # --- Lógica final del cliente ---
     if cliente_seleccionado != "Ninguno":
         cliente = cliente_seleccionado
     else:
