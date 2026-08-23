@@ -107,7 +107,7 @@ menu = st.sidebar.radio("Menú", ["CAJA", "HISTORIAL", "ESTADÍSTICAS"])
 
 if menu == "CAJA":
 
-# --- Lista de peluqueras con colores ---
+    # --- Lista de peluqueras con colores ---
     peluqueras = {
         "Vane": "#ffb6c1",   # rosa pastel
         "Virgi": "#c8a2c8",  # lila pastel
@@ -123,48 +123,64 @@ if menu == "CAJA":
 
     for i, nombre in enumerate(peluqueras.keys()):
         with cols[i]:
-
             color = peluqueras[nombre]
+            activo = st.session_state.peluquera_activa == nombre
 
-            # Si está activa → borde y sombra
-            if st.session_state.peluquera_activa == nombre:
-                estilo = f"""
-                    background-color: {color};
-                    padding: 20px;
-                    border-radius: 15px;
-                    text-align: center;
-                    font-weight: bold;
-                    font-size: 22px;
-                    border: 4px solid white;
-                    box-shadow: 0px 0px 12px rgba(0,0,0,0.3);
-                    cursor: pointer;
-                """
-            else:
-                estilo = f"""
-                    background-color: {color};
-                    padding: 20px;
-                    border-radius: 15px;
-                    text-align: center;
-                    font-weight: bold;
-                    font-size: 22px;
-                    border: 2px solid #ddd;
-                    cursor: pointer;
-                """
+            estilo = f"""
+                background-color: {color};
+                padding: 25px;
+                border-radius: 15px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 22px;
+                border: {'4px solid white' if activo else '2px solid #ddd'};
+                box-shadow: {'0px 0px 12px rgba(0,0,0,0.3)' if activo else 'none'};
+                cursor: pointer;
+            """
 
-            # Bloque clicable
-            if st.button(nombre, key=f"pelu_{nombre}"):
-                st.session_state.peluquera_activa = nombre
-
-            # Bloque visual
-            st.markdown(
+            # Bloque clicable sin botón duplicado
+            clicked = st.markdown(
                 f"""
-                <div style="{estilo}">
+                <div onclick="window.parent.postMessage({{'type': 'streamlit:setComponentValue', 'value': '{nombre}'}}, '*')"
+                     style="{estilo}">
                     {nombre}
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
+    # --- Capturar clic del bloque ---
+    clicked = st.experimental_get_query_params().get("value", [None])[0]
+    if clicked in peluqueras:
+        st.session_state.peluquera_activa = clicked
+
+    # --- Círculo arriba a la derecha con la peluquera activa ---
+    if st.session_state.peluquera_activa:
+        color = peluqueras[st.session_state.peluquera_activa]
+        st.markdown(
+            f"""
+            <div style="
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: {color};
+                color: black;
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: bold;
+                font-size: 18px;
+                border: 3px solid white;
+                box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+            ">
+                {st.session_state.peluquera_activa}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     
     st.title("CAJA")
 
