@@ -13,9 +13,9 @@ GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 REPO = st.secrets["REPO"]         
 FILE_PATH = st.secrets["FILE_PATH"]  
 
-st.write("TOKEN cargado:", GITHUB_TOKEN)
-st.write("REPO:", REPO)
-st.write("FILE:", FILE_PATH)
+# st.write("TOKEN cargado:", GITHUB_TOKEN)
+# st.write("REPO:", REPO)
+# st.write("FILE:", FILE_PATH)
 
 
 # --- Función para añadir registro al CSV en GitHub ---
