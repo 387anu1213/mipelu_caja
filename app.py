@@ -3,6 +3,7 @@ import requests
 import base64
 from datetime import datetime
 import pandas as pd
+from io import StringIO
 
 # --- Configuración desde secrets ---
 GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
@@ -84,7 +85,8 @@ def load_csv_from_github():
     clean_csv = "\n".join(lines)
 
     try:
-        df = pd.read_csv(pd.compat.StringIO(clean_csv))
+        # df = pd.read_csv(pd.compat.StringIO(clean_csv))
+        df = pd.read_csv(StringIO(clean_csv))
         return df
     except Exception as e:
         st.error("❌ Error leyendo el CSV")
