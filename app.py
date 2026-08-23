@@ -107,76 +107,65 @@ menu = st.sidebar.radio("Menú", ["CAJA", "HISTORIAL", "ESTADÍSTICAS"])
 
 if menu == "CAJA":
 
-    # --- Lista de peluqueras ---
-    peluqueras = ["Vane", "Virgi", "Merce"]
+# --- Lista de peluqueras con colores ---
+    peluqueras = {
+        "Vane": "#ffb6c1",   # rosa pastel
+        "Virgi": "#c8a2c8",  # lila pastel
+        "Merce": "#98ffcc"   # verde menta
+    }
 
     # --- Inicializar estado ---
     if "peluquera_activa" not in st.session_state:
         st.session_state.peluquera_activa = None
 
-    # --- Estilos de círculos ---
-    circle_style = """
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        font-weight: bold;
-        font-size: 20px;
-        cursor: pointer;
-        margin: auto;
-        box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-    """
-
-    active_style = "background-color: #ff69b4; color: white;"
-    inactive_style = "background-color: #f0f0f0; color: #333;"
-
-    # --- Mostrar los 3 círculos en línea ---
+    # --- Mostrar los 3 bloques en línea ---
     cols = st.columns(3)
 
-    for i, nombre in enumerate(peluqueras):
+    for i, nombre in enumerate(peluqueras.keys()):
         with cols[i]:
-            estilo = active_style if st.session_state.peluquera_activa == nombre else inactive_style
 
-            if st.button(nombre):
+            color = peluqueras[nombre]
+
+            # Si está activa → borde y sombra
+            if st.session_state.peluquera_activa == nombre:
+                estilo = f"""
+                    background-color: {color};
+                    padding: 20px;
+                    border-radius: 15px;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 22px;
+                    border: 4px solid white;
+                    box-shadow: 0px 0px 12px rgba(0,0,0,0.3);
+                    cursor: pointer;
+                """
+            else:
+                estilo = f"""
+                    background-color: {color};
+                    padding: 20px;
+                    border-radius: 15px;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 22px;
+                    border: 2px solid #ddd;
+                    cursor: pointer;
+                """
+
+            # Bloque clicable
+            if st.button(nombre, key=f"pelu_{nombre}"):
                 st.session_state.peluquera_activa = nombre
 
+            # Bloque visual
             st.markdown(
                 f"""
-                <div style="{circle_style} {estilo}">
-                    {nombre[0]}
+                <div style="{estilo}">
+                    {nombre}
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-    # --- Círculo arriba a la derecha con la peluquera activa ---
-    if st.session_state.peluquera_activa:
-        st.markdown(
-            f"""
-            <div style="
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background-color: #ff69b4;
-                color: white;
-                width: 70px;
-                height: 70px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-weight: bold;
-                font-size: 18px;
-                box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-            ">
-                {st.session_state.peluquera_activa}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )    
-
+    
     st.title("CAJA")
 
 # --- Cargar historial para obtener clientes existentes ---
