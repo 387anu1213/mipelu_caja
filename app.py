@@ -154,4 +154,38 @@ if menu == "CAJA":
     peluquera = st.selectbox("Peluquera", ["Ana", "María", "Lucía", "Otra"])
     propina = st.number_input("Propina (€)", min_value=0, value=0)
 
-    if st.button("💰 COBRAR", use_container
+    if st.button("💰 COBRAR", use_container_width=True):
+        if cliente == "":
+            st.error("Pon el nombre de la cliente")
+        else:
+            servicio_str = "+".join(st.session_state.servicios)
+            append_to_github_csv(cliente, servicio_str, st.session_state.total, pago, peluquera, propina)
+
+            st.session_state.servicios = []
+            st.session_state.total = 0
+
+
+# ============================================================
+# ======================= HISTORIAL ===========================
+# ============================================================
+
+elif menu == "HISTORIAL":
+
+    st.title("📜 Historial de caja")
+
+    df = load_csv_from_github()
+
+    if df.empty:
+        st.info("El historial aún está vacío o no se pudo cargar.")
+    else:
+        st.dataframe(df)
+
+
+# ============================================================
+# ===================== ESTADÍSTICAS ==========================
+# ============================================================
+
+elif menu == "ESTADÍSTICAS":
+
+    st.title("📊 Estadísticas")
+    st.info("En construcción...")
