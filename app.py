@@ -9,14 +9,36 @@ GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 REPO = st.secrets["REPO"]
 FILE_PATH = st.secrets["FILE_PATH"]
 
-# --- Función para añadir registro al CSV en GitHub ---
+# ============================================================
+# =============== FUNCIONES GITHUB (OPTIMIZADAS) ==============
+# ============================================================
+
+def github_headers():
+    return {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+# --- Guardar registro ---
 def append_to_github_csv(cliente, servicio, total, pago, peluquera, propina):
     url = f"https://api.github.com/repos/{REPO}/contents/{FILE_PATH}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
 
-    r = requests.get(url, headers=headers).json()
-    sha = r["sha"]
-    content = base64.b64decode(r["content"]).decode()
+    r = requests.get(url, headers=github_headers())
+
+    # Control de rate limit
+    if r.status_code == 403 and "rate limit" in r.text.lower():
+        st.error("⛔ GitHub te ha bloqueado temporalmente por exceso de peticiones. Espera 1–2 minutos.")
+        return
+
+    data = r.json()
+
+    if "sha" not in data:
+        st.error("❌ No se encontró el archivo en GitHub")
+        st.code(data)
+        return
+
+    sha = data["sha"]
+    content = base64.b64decode(data["content"]).decode()
 
     fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     new_line = f"{fecha},{cliente},{servicio},{total},{pago},{peluquera},{propina}\n"
@@ -24,41 +46,75 @@ def append_to_github_csv(cliente, servicio, total, pago, peluquera, propina):
 
     encoded = base64.b64encode(new_content.encode()).decode()
 
-    requests.put(url, headers=headers, json={
+    r_put = requests.put(url, headers=github_headers(), json={
         "message": "Añadir registro de caja",
         "content": encoded,
         "sha": sha
     })
 
-# --- Función para leer el CSV desde GitHub ---
+    if r_put.status_code not in (200, 201):
+        st.error("❌ Error al guardar en GitHub")
+        st.code(r_put.text)
+    else:
+        st.success("Cobro registrado correctamente")
+
+
+# --- Leer CSV con caché ---
+@st.cache_data
 def load_csv_from_github():
     url = f"https://api.github.com/repos/{REPO}/contents/{FILE_PATH}"
-    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-    r = requests.get(url, headers=headers).json()
-    content = base64.b64decode(r["content"]).decode()
-    df = pd.read_csv(pd.compat.StringIO(content))
-    return df
 
-# --- Menú lateral ---
+    r = requests.get(url, headers=github_headers())
+
+    if r.status_code == 403 and "rate limit" in r.text.lower():
+        st.error("⛔ GitHub te ha bloqueado temporalmente por exceso de peticiones.")
+        return pd.DataFrame()
+
+    data = r.json()
+
+    if "content" not in data:
+        st.error("❌ No se pudo leer el archivo en GitHub")
+        st.code(data)
+        return pd.DataFrame()
+
+    content = base64.b64decode(data["content"]).decode()
+
+    # Limpieza automática
+    lines = [line for line in content.split("\n") if line.strip() != ""]
+    clean_csv = "\n".join(lines)
+
+    try:
+        df = pd.read_csv(pd.compat.StringIO(clean_csv))
+        return df
+    except Exception as e:
+        st.error("❌ Error leyendo el CSV")
+        st.code(e)
+        st.code(clean_csv)
+        return pd.DataFrame()
+
+
+# ============================================================
+# ========================= MENÚ ==============================
+# ============================================================
+
 menu = st.sidebar.radio("Menú", ["CAJA", "HISTORIAL", "ESTADÍSTICAS"])
 
 # ============================================================
 # ========================= CAJA ==============================
 # ============================================================
+
 if menu == "CAJA":
 
     st.title("CAJA")
 
     cliente = st.text_input("Nombre de la cliente")
 
-    # Servicios seleccionados
     if "servicios" not in st.session_state:
         st.session_state.servicios = []
 
     if "total" not in st.session_state:
         st.session_state.total = 0
 
-    # Botones grandes
     st.markdown("""
     <style>
     button {
@@ -89,50 +145,46 @@ if menu == "CAJA":
             st.session_state.servicios.append(f"extra:{extra}")
             st.session_state.total += extra
 
-    # Total a la derecha
     st.markdown("### 💶 Total a pagar")
     st.markdown(f"<h1 style='text-align:right;'>{st.session_state.total} €</h1>", unsafe_allow_html=True)
 
     st.write("Servicios:", ", ".join(st.session_state.servicios))
 
-    # Método de pago
     pago = st.radio("Método de pago", ["Efectivo", "Tarjeta"])
-
-    # Peluquera
     peluquera = st.selectbox("Peluquera", ["Ana", "María", "Lucía", "Otra"])
-
-    # Propina
     propina = st.number_input("Propina (€)", min_value=0, value=0)
 
-    # Botón cobrar
     if st.button("💰 COBRAR", use_container_width=True):
         if cliente == "":
             st.error("Pon el nombre de la cliente")
         else:
             servicio_str = "+".join(st.session_state.servicios)
             append_to_github_csv(cliente, servicio_str, st.session_state.total, pago, peluquera, propina)
-            st.success("Cobro registrado correctamente")
 
-            # Reset
             st.session_state.servicios = []
             st.session_state.total = 0
+
 
 # ============================================================
 # ======================= HISTORIAL ===========================
 # ============================================================
+
 elif menu == "HISTORIAL":
 
     st.title("📜 Historial de caja")
 
-    try:
-        df = load_csv_from_github()
-        st.dataframe(df)
-    except:
+    df = load_csv_from_github()
+
+    if df.empty:
         st.info("El historial aún está vacío o no se pudo cargar.")
+    else:
+        st.dataframe(df)
+
 
 # ============================================================
 # ===================== ESTADÍSTICAS ==========================
 # ============================================================
+
 elif menu == "ESTADÍSTICAS":
 
     st.title("📊 Estadísticas")
