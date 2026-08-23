@@ -114,45 +114,49 @@ if menu == "CAJA":
         "Merce": "#98ffcc"   # verde menta
     }
 
-    # --- Selector visual de peluquera ---
     st.markdown("### 💇‍♀️ Selecciona la peluquera")
 
-    seleccion = st.radio(
-        "",
-        list(peluqueras.keys()),
-        horizontal=True,
-        label_visibility="collapsed"
-    )
+    # --- Fila con selector + círculo ---
+    col_sel1, col_sel2, col_sel3, col_circle = st.columns([1,1,1,0.5])
 
+    # --- Selector visual de peluquera ---
+    with col_sel1:
+        seleccion = st.radio(
+            "",
+            list(peluqueras.keys()),
+            horizontal=True,
+            label_visibility="collapsed"
+        )
+
+    # Guardar selección
     st.session_state.peluquera_activa = seleccion
 
-    # --- Círculo arriba a la derecha con la peluquera activa ---
-    color = peluqueras[seleccion]
-    st.markdown(
-        f"""
-        <div style="
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: {color};
-            color: black;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 18px;
-            border: 3px solid white;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-        ">
-            {seleccion}
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-    
+    # --- Círculo alineado a la derecha ---
+    with col_circle:
+        color = peluqueras[seleccion]
+        st.markdown(
+            f"""
+            <div style="
+                background-color: {color};
+                color: black;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: bold;
+                font-size: 16px;
+                border: 3px solid white;
+                box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+                margin-top: 10px;
+            ">
+                {seleccion}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
     st.title("CAJA")
 
 # --- Cargar historial para obtener clientes existentes ---
