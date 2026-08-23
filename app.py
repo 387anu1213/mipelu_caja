@@ -109,12 +109,12 @@ if menu == "CAJA":
 
     # --- Lista de peluqueras con colores ---
     peluqueras = {
-        "Vane": "#ffb6c1",   # rosa pastel
+        "Vane": "#98ffcc",   # rosa pastel 
         "Virgi": "#c8a2c8",  # lila pastel
-        "Merce": "#98ffcc"   # verde menta
+        "Merce": "#ffb6c1"   # verde menta 
     }
 
-    st.markdown("*Peluquera")
+    st.markdown(" * Peluquera")
 
     # --- Fila con las tres opciones y el círculo ---
     col_vane, col_virgi, col_merce, col_circle = st.columns([1,1,1,0.5])
