@@ -114,48 +114,49 @@ if menu == "CAJA":
         "Merce": "#98ffcc"   # verde menta
     }
 
-    st.markdown("### 💇‍♀️ Selecciona la peluquera")
+    st.markdown("*Peluquera")
 
-    # --- Fila con selector + círculo ---
-    col_sel1, col_sel2, col_sel3, col_circle = st.columns([1,1,1,0.5])
+    # --- Fila con las tres opciones y el círculo ---
+    col_vane, col_virgi, col_merce, col_circle = st.columns([1,1,1,0.5])
 
-    # --- Selector visual de peluquera ---
-    with col_sel1:
-        seleccion = st.radio(
-            "",
-            list(peluqueras.keys()),
-            horizontal=True,
-            label_visibility="collapsed"
-        )
+    with col_vane:
+        if st.button("Vane", use_container_width=True):
+            st.session_state.peluquera_activa = "Vane"
 
-    # Guardar selección
-    st.session_state.peluquera_activa = seleccion
+    with col_virgi:
+        if st.button("Virgi", use_container_width=True):
+            st.session_state.peluquera_activa = "Virgi"
+
+    with col_merce:
+        if st.button("Merce", use_container_width=True):
+            st.session_state.peluquera_activa = "Merce"
 
     # --- Círculo alineado a la derecha ---
-    with col_circle:
-        color = peluqueras[seleccion]
-        st.markdown(
-            f"""
-            <div style="
-                background-color: {color};
-                color: black;
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-weight: bold;
-                font-size: 16px;
-                border: 3px solid white;
-                box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-                margin-top: 10px;
-            ">
-                {seleccion}
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+    if "peluquera_activa" in st.session_state:
+        color = peluqueras[st.session_state.peluquera_activa]
+        with col_circle:
+            st.markdown(
+                f"""
+                <div style="
+                    background-color: {color};
+                    color: black;
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-weight: bold;
+                    font-size: 16px;
+                    border: 3px solid white;
+                    box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+                    margin-top: 10px;
+                ">
+                    {st.session_state.peluquera_activa}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
         
     st.title("CAJA")
 
