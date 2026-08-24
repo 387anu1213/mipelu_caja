@@ -252,19 +252,17 @@ if st.button("💰 COBRAR", use_container_width=True):
             servicio_str,
             st.session_state.total,
             pago,
-            st.session_state.peluquera_activa,   # ← aquí estaba el error
+            st.session_state.peluquera_activa,   
             propina
         )
 
         st.session_state.servicios = []
         st.session_state.total = 0
 
-        # st.success("Cobro registrado correctamente")
+        st.balloons()
 
-        # Meme del hermano de Lamine Yamal en el mundial
         # meme_lamine = "https://i.imgflip.com/92jz8x.jpg"
-        meme = "https://i.kym-cdn.com/photos/images/newsfeed/002/681/313/4e9.jpg"
-        st.image(meme, width=250)
+        # st.image(meme_lamine, width=250)
 
 
 # ============================================================
